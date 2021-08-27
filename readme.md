@@ -10,4 +10,4 @@ A simple wiki based on markdown markup
 
 ## License
 
-This repo lisensed under GNU GPLv3 license. View [License](LICENSE) file for more details
+This repository licensed under GNU GPLv3 license. View [License](LICENSE) file for more details
