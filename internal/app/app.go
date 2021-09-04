@@ -8,11 +8,17 @@ import (
 	"time"
 
 	"github.com/yosa12978/WikiMD/internal/config"
+	"github.com/yosa12978/WikiMD/internal/pkg/mongo"
 	server "github.com/yosa12978/WikiMD/internal/web"
 )
 
 func Run() {
 	cfg, err := config.LoadConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = mongo.InitMongo(cfg)
 	if err != nil {
 		panic(err)
 	}

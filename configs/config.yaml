@@ -1,9 +1,9 @@
 Wiki:
   name: WikiMD
   desc: markdown wiki
-  icon: ./logo.png
+  icon: /static/logo.png
 Server:
   port: 8989
 Mongo:
-  conn: mongodb://:@localhost:27017/
+  conn: mongodb://localhost:27017/
   db: wikimd

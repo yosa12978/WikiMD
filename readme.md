@@ -1,5 +1,5 @@
 
-<img src="logo.png"/>
+<img src="./static/wikimd.png"/>
 
 A simple wiki based on markdown markup
 
