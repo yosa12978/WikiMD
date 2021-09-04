@@ -152,10 +152,6 @@ func (pr *PageRepository) SearchPages(query string) []models.Page {
 	return pages
 }
 
-/*
-TODO:
-- Complete this function
-*/
 func (pr *PageRepository) AddCommit(pageid_hex string, commit *models.Commit) error {
 	id, err := primitive.ObjectIDFromHex(pageid_hex)
 	if err != nil {
@@ -175,11 +171,6 @@ func (pr *PageRepository) AddCommit(pageid_hex string, commit *models.Commit) er
 	}
 	return nil
 }
-
-/*
-TODO:
-- Add moderator check
-*/
 
 func (pr *PageRepository) DeletePage(id_hex string) error {
 	id, err := primitive.ObjectIDFromHex(id_hex)
