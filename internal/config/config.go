@@ -6,12 +6,14 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type Wiki struct {
+	Name string `yaml:"name"`
+	Desc string `yaml:"desc"`
+	Icon string `yaml:"icon"`
+}
+
 type Config struct {
-	Wiki struct {
-		Name string `yaml:"name"`
-		Desc string `yaml:"desc"`
-		Icon string `yaml:"icon"`
-	} `yaml:"Wiki"`
+	Wiki   Wiki `yaml:"Wiki"`
 	Server struct {
 		Port int `yaml:"port"`
 	} `yaml:"Server"`

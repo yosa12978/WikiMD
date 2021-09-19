@@ -8,5 +8,6 @@ type User struct {
 	Password string             `json:"-" bson:"password"`
 	Email    string             `json:"email" bson:"email"`
 	Token    string             `json:"token" bson:"token"`
-	Regdate  int                `json:"regdate" bson:"regdate"`
+	Role     Role               `json:"role" bson:"role"`
+	Regdate  int64              `json:"regdate" bson:"regdate"`
 }

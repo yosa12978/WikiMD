@@ -1,0 +1,28 @@
+{{define "page"}}
+
+{{template "header" .}}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+
+
+<div class="card">
+  <div class="card-header">
+    <h4>{{.P.Name}}</h4>
+  </div>
+  <div class="card-body">
+    <div id='content'></div>
+  </div>
+  <div class="card-footer text-muted">
+    <small>{{.P.Page}}</small> | <small id="upd">Last Update: {{.P.Time}}</small> | <a href="/page/update/{{.P.Page}}">Update Content</a> | <a href="/commits/{{.P.Page}}">Commit History</a>
+  </div>
+</div>
+
+<script>
+  document.getElementById('content').innerHTML = marked("{{.P.Body}}");
+  let dat = new Date({{.P.Time}} * 1000)
+  let dt = moment(dat).format("DD/MM/YYYY HH:mm")
+  document.getElementById('upd').innerHTML = "Last Update: " + dt
+</script>
+{{template "footer" .}}
+
+{{end}}

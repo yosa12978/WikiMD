@@ -1,0 +1,20 @@
+{{define "commits"}}
+
+{{template "header" .}}
+
+<h3>Commit history</h3>
+
+<div class="card" style="width: 18rem;">
+    <ul class="list-group list-group-flush">
+      {{range .P}}
+      <li class="list-group-item"><a href="/commit/{{.ID.Hex}}">{{.ID.Hex}}</a><br><small id="upd{{.ID.Hex}}">{{.Time}}</small></li>
+        <script>
+            ConvertTime({{.Time}}, "upd{{.ID.Hex}}")
+        </script>
+      {{end}}
+    </ul>
+</div>
+
+{{template "footer" .}}
+
+{{end}}

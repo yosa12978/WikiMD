@@ -1,0 +1,36 @@
+{{define "header"}}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/static/style.css">
+        <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+        <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous"> -->
+        <title>{{.Info.Name}}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <script src="/static/scripts/script.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
+    </head>
+    <body>
+        <div>
+        <h1>{{.Info.Name}}</h1>
+        <small>{{.Info.Desc}}</small><br>
+        <a href="/">Home</a>
+        <a href="/pages">Pages</a>
+        <a href="/pages/search">Search</a>
+        <div style="float: right">
+        {{ if .Authenticated }}
+        <a href="/user/{{.User}}">{{.User}}</a>
+        <a href="/auth/logout">Logout</a>
+        {{ else }}
+        <a href="/auth/login">Login</a>
+        <a href="/auth/signup">Signup</a>
+        {{ end }}
+        </div>
+        <hr>
+        </div>
+{{end}}

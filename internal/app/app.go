@@ -2,6 +2,7 @@ package app
 
 import (
 	"log"
+	"math/rand"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,6 +14,7 @@ import (
 )
 
 func Run() {
+	rand.Seed(time.Now().Unix())
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		panic(err)

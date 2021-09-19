@@ -1,0 +1,29 @@
+{{define "commit"}}
+
+{{template "header" .}}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+
+<h3>Commit {{.P.ID.Hex}}</h3>
+
+<div class="card">
+  <div class="card-header">
+    <h4>{{.P.Name}}</h4>
+  </div>
+  <div class="card-body">
+    <div id='content'></div>
+  </div>
+  <div class="card-footer text-muted">
+    <small>{{.P.Page}}</small> | <small id="upd">Commit Date: {{.P.Time}}</small>
+  </div>
+</div>
+
+<script>
+  document.getElementById('content').innerHTML = marked("{{.P.Body}}");
+  let dat = new Date({{.P.Time}} * 1000)
+  let dt = moment(dat).format("DD/MM/YYYY HH:mm")
+  document.getElementById('upd').innerHTML = "Commit Date: " + dt
+</script>
+{{template "footer" .}}
+
+{{end}}

@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 	"errors"
-	"sync"
+	"time"
 
 	"github.com/yosa12978/WikiMD/internal/pkg/dto"
 	"github.com/yosa12978/WikiMD/internal/pkg/models"
@@ -16,11 +16,12 @@ import (
 
 type IPageRepository interface {
 	CreatePage(page_dto *dto.CreatePageDTO, username string) error
-	ReadPage(id_hex string) (*models.Page, error)
+	ReadPage(id_hex string) (*models.Commit, error)
 	GetPages() []models.Page
 	SearchPages(query string) []models.Page
 	AddCommit(pageid_hex string, commit *models.Commit) error
-	DeletePage(id_hex string) error
+	DeletePage(id_hex string, username string) error
+	GetPageObj(id_hex string) (*models.Page, error)
 }
 
 type PageRepository struct {
@@ -32,51 +33,33 @@ func NewPageRepository() IPageRepository {
 }
 
 func (pr *PageRepository) CreatePage(page_dto *dto.CreatePageDTO, username string) error {
+	pageid := primitive.NewObjectID()
 	commit := models.Commit{
 		ID:   primitive.NewObjectID(),
 		Name: page_dto.Name,
 		Body: page_dto.Body,
-		Page: models.Page{},
+		Page: pageid.Hex(),
 		User: username,
+		Time: time.Now().Unix(),
 	}
 	page := models.Page{
-		ID:           primitive.NewObjectID(),
+		ID:           pageid,
+		Name:         page_dto.Name,
 		LastCommitID: commit.ID.Hex(),
 		Commits:      []models.Commit{commit},
 	}
-	commit.Page = page
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	session, err := pr.db.Client().StartSession()
+
+	_, err := pr.db.Collection("commits").InsertOne(ctx, commit)
 	if err != nil {
 		return err
 	}
-	err = pr.db.Client().UseSession(ctx, func(sessionContext mongo.SessionContext) error {
-		err := sessionContext.StartTransaction()
-		if err != nil {
-			return err
-		}
-
-		_, err = pr.db.Collection("commits").InsertOne(sessionContext, commit)
-		if err != nil {
-			return err
-		}
-
-		_, err = pr.db.Collection("pages").InsertOne(sessionContext, page)
-		if err != nil {
-			sessionContext.AbortTransaction(sessionContext)
-			return err
-		}
-
-		if err = session.CommitTransaction(sessionContext); err != nil {
-			return err
-		}
-		return nil
-	})
+	_, err = pr.db.Collection("pages").InsertOne(ctx, page)
 	return err
 }
 
-func (pr *PageRepository) ReadPage(id_hex string) (*models.Page, error) {
+func (pr *PageRepository) ReadPage(id_hex string) (*models.Commit, error) {
 	id, err := primitive.ObjectIDFromHex(id_hex)
 	if err != nil {
 		return nil, errors.New("page not found")
@@ -91,11 +74,13 @@ func (pr *PageRepository) ReadPage(id_hex string) (*models.Page, error) {
 	if err != nil {
 		return nil, errors.New("page not found")
 	}
-	return &page, nil
+
+	commit, err := NewCommitRepository().GetCommitByID(page.LastCommitID)
+	return commit, err
 }
 
 func (pr *PageRepository) GetPages() []models.Page {
-	f_opt := options.Find().SetSort(bson.M{"_id": -1})
+	f_opt := options.Find().SetSort(bson.M{"name": 1})
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var pages []models.Page
@@ -103,31 +88,27 @@ func (pr *PageRepository) GetPages() []models.Page {
 	if err != nil {
 		return pages
 	}
-	var wg sync.WaitGroup
+	// var wg sync.WaitGroup
 	for cursor.Next(ctx) {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			var page models.Page
-			err := cursor.Decode(&page)
-			if err != nil {
-				return
-			}
-			pages = append(pages, page)
-		}()
+		// wg.Add(1)
+		// go func(c *mongo.Cursor) {
+		// 	defer wg.Done()
+		var page models.Page
+		err := cursor.Decode(&page)
+		if err != nil {
+			continue
+			// return
+		}
+		pages = append(pages, page)
+		// 	}(cursor)
 	}
-	wg.Wait()
+	// wg.Wait()
 	return pages
 }
 
 func (pr *PageRepository) SearchPages(query string) []models.Page {
-	filter := bson.M{
-		"$regex": bson.M{"$or": []bson.M{
-			{"name": query},
-			{"body": query},
-		}},
-	}
-	f_opt := options.Find().SetSort(bson.M{"_id": -1})
+	filter := bson.M{"name": primitive.Regex{Pattern: query, Options: "i"}}
+	f_opt := options.Find().SetSort(bson.M{"name": -1})
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var pages []models.Page
@@ -135,21 +116,32 @@ func (pr *PageRepository) SearchPages(query string) []models.Page {
 	if err != nil {
 		return pages
 	}
-	var wg sync.WaitGroup
 	for cursor.Next(ctx) {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			var page models.Page
-			err := cursor.Decode(page)
-			if err != nil {
-				return
-			}
-			pages = append(pages, page)
-		}()
+		var page models.Page
+		err := cursor.Decode(&page)
+		if err != nil {
+			continue
+		}
+		pages = append(pages, page)
 	}
-	wg.Wait()
 	return pages
+}
+func (pr *PageRepository) GetPageObj(id_hex string) (*models.Page, error) {
+	id, err := primitive.ObjectIDFromHex(id_hex)
+	if err != nil {
+		return nil, errors.New("page not found")
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	filter := bson.M{
+		"_id": id,
+	}
+	var page models.Page
+	err = pr.db.Collection("pages").FindOne(ctx, filter).Decode(&page)
+	if err != nil {
+		return nil, errors.New("page not found")
+	}
+	return &page, err
 }
 
 func (pr *PageRepository) AddCommit(pageid_hex string, commit *models.Commit) error {
@@ -157,12 +149,13 @@ func (pr *PageRepository) AddCommit(pageid_hex string, commit *models.Commit) er
 	if err != nil {
 		return errors.New("page not found")
 	}
-	page, err := pr.ReadPage(pageid_hex)
+	page, err := pr.GetPageObj(pageid_hex)
 	if err != nil {
 		return err
 	}
 	page.Commits = append(page.Commits, *commit)
 	page.LastCommitID = commit.ID.Hex()
+	page.Name = commit.Name
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	_, err = pr.db.Collection("pages").ReplaceOne(ctx, bson.M{"_id": id}, *page)
@@ -172,7 +165,14 @@ func (pr *PageRepository) AddCommit(pageid_hex string, commit *models.Commit) er
 	return nil
 }
 
-func (pr *PageRepository) DeletePage(id_hex string) error {
+func (pr *PageRepository) DeletePage(id_hex string, username string) error {
+	urole, err := NewUserRepository().GetUserRole(username)
+	if err != nil {
+		return err
+	}
+	if urole == models.USER_ROLE {
+		return errors.New("forbidden")
+	}
 	id, err := primitive.ObjectIDFromHex(id_hex)
 	if err != nil {
 		return errors.New("page not found")

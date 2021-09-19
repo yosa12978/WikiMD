@@ -1,0 +1,17 @@
+{{define "user"}}
+
+{{template "header" .}}
+<h4>{{.P.Username}}</h4>
+<small>{{.P.Email}}</small>
+<br>
+<small id="regdate"></small>
+<script>
+
+    var c = new Date({{.P.Regdate}}*1000);
+    var b = document.getElementById("regdate");
+    var f = "Reg Date: "+c.getDate()+"/"+(c.getMonth()+1)+"/"+c.getFullYear()
+    b.innerHTML = f;
+</script>
+{{template "footer" .}}
+
+{{end}}

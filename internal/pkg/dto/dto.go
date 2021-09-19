@@ -11,3 +11,15 @@ type AddCommitDTO struct {
 	PageID string
 	Commit *models.Commit
 }
+
+type UserSessionDTO struct {
+	Username string
+	Role     models.Role
+}
+
+type CreateCommitDTO struct {
+	Name   string
+	Body   string
+	PageID string
+	User   string
+}

@@ -1,0 +1,10 @@
+html {
+    margin: 5px;
+}
+* {
+    font-family: "Lucida Console", "Courier New", monospace;
+    word-wrap: break-word;
+}
+.form-control {
+    max-width: 400px;
+}

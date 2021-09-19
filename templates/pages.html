@@ -1,0 +1,18 @@
+{{define "pages"}}
+
+{{template "header" .}}
+<a href="/page/create">Create New Page</a>
+<br>
+<br>
+<div class="card" style="width: 18rem;">
+
+  <ul class="list-group list-group-flush">
+    {{range .P}}
+    <li class="list-group-item"><a href="/page/id/{{.ID.Hex}}">{{.Name}}</a></li>
+    {{end}}
+  </ul>
+</div>
+
+{{template "footer" .}}
+
+{{end}}

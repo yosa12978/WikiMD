@@ -1,0 +1,22 @@
+{{define "search"}}
+
+{{template "header" .}}
+<h3>Search</h3>
+<form method="GET" action="/pages/search" ><br>
+    <input name="q" class="form-control" type="text" placeholder="search"/>
+    <button class="btn btn-secondary" type="submit">search</button>
+</form>
+<br>
+<br>
+<div class="card" style="width: 18rem;">
+
+  <ul class="list-group list-group-flush">
+    {{range .P}}
+    <li class="list-group-item"><a href="/page/id/{{.ID.Hex}}">{{.Name}}</a></li>
+    {{end}}
+  </ul>
+</div>
+
+{{template "footer" .}}
+
+{{end}}

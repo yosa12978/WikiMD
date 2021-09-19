@@ -11,6 +11,6 @@ import (
 func Run(port int) {
 	router := routers.InitMainRouter()
 	go func(prt int, routr *mux.Router) {
-		http.ListenAndServe(fmt.Sprintf(":%d", prt), routr)
+		http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", prt), routr)
 	}(port, router)
 }
