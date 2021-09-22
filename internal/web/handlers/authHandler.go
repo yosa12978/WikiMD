@@ -63,7 +63,7 @@ func (ah *AuthHandler) CreateUserPost(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	err := repositories.NewUserRepository().CreateUser(username, password, email)
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), 404)
 		return
 	}
 	http.Redirect(w, r, "/auth/login", 301)

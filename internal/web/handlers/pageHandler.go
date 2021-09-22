@@ -55,7 +55,7 @@ func (ph *PageHandler) CreatePagePost(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad request", 400)
 		return
 	}
-	http.Redirect(w, r, "/pages/", 301)
+	http.Redirect(w, r, "/", 301)
 }
 
 func (ph *PageHandler) UpdatePageGet(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +107,7 @@ func (ph *PageHandler) DeletePage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 404)
 		return
 	}
-	http.Redirect(w, r, "/pages", 301)
+	http.Redirect(w, r, "/", 301)
 }
 
 func (ph *PageHandler) SearchPage(w http.ResponseWriter, r *http.Request) {

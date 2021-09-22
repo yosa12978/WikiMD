@@ -48,5 +48,5 @@ func (ch *CommitHandler) DeleteCommit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 404)
 		return
 	}
-	http.Redirect(w, r, "/pages", 301)
+	http.Redirect(w, r, "/", 301)
 }

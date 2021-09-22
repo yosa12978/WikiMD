@@ -1,6 +1,6 @@
 Wiki:
-  name: World of Warcraft Wiki
-  desc: a small wiki about one of the most popular mmorpg games
+  name: WikiMD
+  desc: a light markdown wikiengine
   icon: /static/logo.png
 Server:
   port: 8989

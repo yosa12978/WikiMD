@@ -15,16 +15,15 @@ func InitMainRouter() *mux.Router {
 	fs := http.FileServer(http.Dir("./static/"))
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
-	mainHandler := handlers.NewMainHandler()
+	// mainHandler := handlers.NewMainHandler()
 	authHandler := handlers.NewAuthHandler()
 	userHandler := handlers.NewUserHandler()
 	pageHandler := handlers.NewPageHandler()
 	commitHandler := handlers.NewCommitHandler()
-
-	router.Handle("/", midware.LoginRequired(http.HandlerFunc(mainHandler.GetWikiInfo))).Methods("GET")
+	errorHandler := handlers.NewErrorHandler()
 
 	router.HandleFunc("/page/id/{id}", pageHandler.GetPage).Methods("GET")
-	router.HandleFunc("/pages", pageHandler.GetPages).Methods("GET")
+	router.HandleFunc("/", pageHandler.GetPages).Methods("GET")
 	router.Handle("/page/create", midware.LoginRequired(http.HandlerFunc(pageHandler.CreatePageGet))).Methods("GET")
 	router.Handle("/page/create", midware.LoginRequired(http.HandlerFunc(pageHandler.CreatePagePost))).Methods("POST")
 	router.Handle("/page/update/{id}", midware.LoginRequired(http.HandlerFunc(pageHandler.UpdatePageGet))).Methods("GET")
@@ -43,6 +42,8 @@ func InitMainRouter() *mux.Router {
 	auth.HandleFunc("/signup", authHandler.CreateUserGet).Methods("GET")
 	auth.HandleFunc("/signup", authHandler.CreateUserPost).Methods("POST")
 	auth.HandleFunc("/logout", authHandler.LogoutUser).Methods("GET")
+
+	router.NotFoundHandler = http.HandlerFunc(errorHandler.Error404Handler)
 
 	return router
 }

@@ -66,6 +66,9 @@ func (cr *CommitRepository) CreateCommit(commit_dto dto.CreateCommitDTO, usernam
 	page.LastCommitID = id.Hex()
 	page.Name = commit.Name
 	pageid, err := primitive.ObjectIDFromHex(commit_dto.PageID)
+	if err != nil {
+		return errors.New("page not found")
+	}
 	filter := bson.M{"_id": pageid}
 	_, err = cr.db.Collection("pages").ReplaceOne(ctx, filter, page)
 	return err

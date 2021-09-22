@@ -22,7 +22,7 @@ func (uh *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	ur := repositories.NewUserRepository()
 	user, err := ur.ReadUser(mux.Vars(r)["username"])
 	if err != nil {
-		http.Redirect(w, r, "/error404", 301)
+		http.Error(w, err.Error(), 404)
 		return
 	}
 	helpers.RenderTmpl(w, r, "user", user)
