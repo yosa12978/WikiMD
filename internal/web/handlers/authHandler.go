@@ -33,7 +33,7 @@ func (ah *AuthHandler) LoginUserPost(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	usd, err := repositories.NewUserRepository().LogInUser(username, password)
 	if err != nil {
-		w.Write([]byte("user does not exist"))
+		http.Error(w, err.Error(), 404)
 		return
 	}
 	s, err := midware.Store.Get(r, "user_store")
@@ -83,7 +83,7 @@ func (ah *AuthHandler) LogoutUser(w http.ResponseWriter, r *http.Request) {
 	delete(s.Values, "authenticated")
 	err = s.Save(r, w)
 	if err != nil {
-		w.Write([]byte(err.Error()))
+		http.Error(w, err.Error(), 404)
 		return
 	}
 	http.Redirect(w, r, "/auth/login", 301)
