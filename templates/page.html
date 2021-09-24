@@ -13,7 +13,7 @@
     <div id='content'></div>
   </div>
   <div class="card-footer text-muted">
-    <small>{{.P.Page}}</small> | <small id="upd">Last Update: {{.P.Time}}</small> | <a href="/page/update/{{.P.Page}}">Update Content</a> | <a href="/commits/{{.P.Page}}">Commit History</a>
+    <small>{{.P.Page}}</small> | <small id="upd">Last Update: {{.P.Time}}</small> | <a href="/page/update/{{.P.Page}}">Update Content</a> | <a href="/commits/{{.P.Page}}">Commit History</a>{{if eq .Role "MODER"}} | <a href="/page/delete/{{.P.Page}}">Delete Page</a> {{end}}
   </div>
 </div>
 

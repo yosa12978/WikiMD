@@ -1,11 +1,8 @@
 {{define "pages"}}
 
 {{template "header" .}}
-<a href="/page/create">Create New Page</a>
-<br>
-<br>
+<a href="/page/create" class="btn btn-primary mb-3" style="width: 18rem; max-width: 18rem;"><i class="fa fa-plus-square" aria-hidden="true"></i>Create New Page</a>
 <div class="card" style="width: 18rem;">
-
   <ul class="list-group list-group-flush">
     {{range .P}}
     <li class="list-group-item"><a href="/page/id/{{.ID.Hex}}">{{.Name}}</a></li>

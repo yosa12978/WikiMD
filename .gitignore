@@ -5,5 +5,4 @@
 *.dylib
 *.test
 *.out
-./todo.md
-./vendor
+vendor/

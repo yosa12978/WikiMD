@@ -86,6 +86,18 @@ func (cr *CommitRepository) DeleteCommit(id_hex string) error {
 	if err != nil {
 		return errors.New("commit not found")
 	}
+
+	filtert := bson.M{"last_commit_id": id.Hex()}
+	var page *models.Page
+	err = cr.db.Collection("pages").FindOne(ctx, filtert).Decode(page)
+	if err != nil {
+		return errors.New("page not found")
+	}
+	page.LastCommitID = page.Commits[len(page.Commits)-1].ID.Hex()
+	_, err = cr.db.Collection("pages").ReplaceOne(ctx, filtert, page)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

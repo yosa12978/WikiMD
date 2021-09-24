@@ -4,6 +4,7 @@
 
 <h3>Commit history</h3>
 
+{{if .P}}
 <div class="card" style="width: 18rem;">
     <ul class="list-group list-group-flush">
       {{range .P}}
@@ -14,6 +15,7 @@
       {{end}}
     </ul>
 </div>
+{{end}}
 
 {{template "footer" .}}
 

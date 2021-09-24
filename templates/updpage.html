@@ -7,7 +7,7 @@
 <form method="POST" action="/page/update/{{.P.Page}}" ><br>
     <input name="name" id="name" class="form-control" type="text" style="width: 100%; max-width: 100%;" placeholder="name"/><br>
     <textarea name="body" id="body" class="form-control" type="text" style="width: 100%; height:100%; max-width: 100%;min-height: 228px; " placeholder="body"></textarea>
-    <br><button class="btn btn-secondary" type="submit">Add Commit</button>
+    <br><button class="btn btn-primary" type="submit">Add Commit</button>
 </form>
 <script>
     document.getElementById("name").defaultValue = "{{.P.Name}}"; 

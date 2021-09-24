@@ -14,7 +14,7 @@
     <div id='content'></div>
   </div>
   <div class="card-footer text-muted">
-    <small>{{.P.Page}}</small> | <small id="upd">Commit Date: {{.P.Time}}</small>
+    <small>{{.P.Page}}</small> | <small id="upd">Commit Date: {{.P.Time}}</small> | <small>User: {{.P.User}} {{if eq .Role "MODER"}}| <a href="/commit/delete/{{.P.ID.Hex}}">Delete Commit</a> {{end}}</small>
   </div>
 </div>
 

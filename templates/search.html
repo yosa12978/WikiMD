@@ -2,20 +2,21 @@
 
 {{template "header" .}}
 <h3>Search</h3>
-<form method="GET" action="/pages/search" ><br>
-    <input name="q" class="form-control" type="text" placeholder="search"/>
-    <button class="btn btn-secondary" type="submit">search</button>
+<form method="GET" action="/pages/search" class="form-inline">
+    <input name="q" class="form-control" style="float: left;" type="text" placeholder="search"/>
+    <button class="btn btn-primary mr-1" type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
 </form>
 <br>
 <br>
+{{if .P}}
 <div class="card" style="width: 18rem;">
-
   <ul class="list-group list-group-flush">
     {{range .P}}
     <li class="list-group-item"><a href="/page/id/{{.ID.Hex}}">{{.Name}}</a></li>
     {{end}}
   </ul>
 </div>
+{{end}}
 
 {{template "footer" .}}
 

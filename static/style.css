@@ -2,9 +2,19 @@ html {
     margin: 5px;
 }
 * {
-    font-family: "Lucida Console", "Courier New", monospace;
+    font-family: 'Times New Roman', Times, serif;
     word-wrap: break-word;
 }
 .form-control {
     max-width: 400px;
+
 }
+i {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+/*
+.footer {
+    position:fixed;
+    bottom:0;
+} */
