@@ -19,6 +19,7 @@ type ICommitRepository interface {
 	CreateCommit(commit_dto dto.CreateCommitDTO, username string) error
 	DeleteCommit(id_hex string) error
 	GetCommitsByPageID(id_hex string) ([]models.Commit, error)
+	ChangeCommit(id_hex string, page_id_hex string) error
 }
 
 type CommitRepository struct {
@@ -75,30 +76,67 @@ func (cr *CommitRepository) CreateCommit(commit_dto dto.CreateCommitDTO, usernam
 }
 
 func (cr *CommitRepository) DeleteCommit(id_hex string) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	id, err := primitive.ObjectIDFromHex(id_hex)
 	if err != nil {
 		return errors.New("commit not found")
 	}
-	filter := bson.M{"_id": id}
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	_, err = cr.db.Collection("commits").DeleteOne(ctx, filter)
+
+	commit_filter := bson.M{"_id": id}
+	var commit models.Commit
+	err = cr.db.Collection("commits").FindOne(ctx, commit_filter).Decode(&commit)
 	if err != nil {
 		return errors.New("commit not found")
 	}
 
-	filtert := bson.M{"last_commit_id": id.Hex()}
-	var page *models.Page
-	err = cr.db.Collection("pages").FindOne(ctx, filtert).Decode(page)
+	page_id, err := primitive.ObjectIDFromHex(commit.Page)
 	if err != nil {
 		return errors.New("page not found")
 	}
-	page.LastCommitID = page.Commits[len(page.Commits)-1].ID.Hex()
-	_, err = cr.db.Collection("pages").ReplaceOne(ctx, filtert, page)
+
+	page_filter := bson.M{"_id": page_id}
+	var page models.Page
+	err = cr.db.Collection("pages").FindOne(ctx, page_filter).Decode(&page)
 	if err != nil {
-		return err
+		return errors.New("page not found")
 	}
-	return nil
+
+	for i := 0; i < len(page.Commits)-1; i++ {
+		for j := i; j < len(page.Commits)-1-i; j++ {
+			if page.Commits[j].ID.Hex() > page.Commits[j+1].ID.Hex() {
+				temp := page.Commits[j]
+				page.Commits[j] = page.Commits[j+1]
+				page.Commits[j+1] = temp
+			}
+		}
+	}
+
+	var s int
+	var low int = 0
+	var high int = len(page.Commits) - 1
+	for low <= high {
+		var middle int = (low + high) / 2
+		var guess string = page.Commits[middle].ID.Hex()
+		if guess == id_hex {
+			s = middle
+			break
+		} else if guess > id_hex {
+			high = middle - 1
+		} else {
+			low = middle + 1
+		}
+	}
+	page.Commits = append(page.Commits[:s], page.Commits[s+1:]...)
+	cr.ChangeCommit(page.Commits[len(page.Commits)-1].ID.Hex(), page_id.Hex())
+
+	_, err = cr.db.Collection("commits").DeleteOne(ctx, commit_filter)
+	if err != nil {
+		return errors.New("commit not found")
+	}
+
+	return err
 }
 
 func (cr *CommitRepository) GetCommitsByPageID(id string) ([]models.Commit, error) {
@@ -115,4 +153,38 @@ func (cr *CommitRepository) GetCommitsByPageID(id string) ([]models.Commit, erro
 		return nil, err
 	}
 	return commits, nil
+}
+
+func (cr *CommitRepository) ChangeCommit(id_hex string, page_id_hex string) error {
+	id, err := primitive.ObjectIDFromHex(id_hex)
+	if err != nil {
+		return errors.New("commit not found")
+	}
+	page_id, err := primitive.ObjectIDFromHex(page_id_hex)
+	if err != nil {
+		return errors.New("page not found")
+	}
+
+	pagefilter := bson.M{"_id": page_id}
+	cfilter := bson.M{"_id": id}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	var page models.Page
+	err = cr.db.Collection("pages").FindOne(ctx, pagefilter).Decode(&page)
+	if err != nil {
+		return errors.New("page not found")
+	}
+
+	var commit models.Commit
+	err = cr.db.Collection("commits").FindOne(ctx, cfilter).Decode(&commit)
+	if err != nil {
+		return errors.New("commit not found")
+	}
+
+	page.LastCommitID = id.Hex()
+
+	_, err = cr.db.Collection("pages").ReplaceOne(ctx, pagefilter, page)
+	return err
 }
