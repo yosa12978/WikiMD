@@ -184,7 +184,6 @@ func (cr *CommitRepository) ChangeCommit(id_hex string, page_id_hex string) erro
 	}
 
 	page.LastCommitID = id.Hex()
-
-	_, err = cr.db.Collection("pages").ReplaceOne(ctx, pagefilter, page)
+	_, err = cr.db.Collection("pages").ReplaceOne(context.TODO(), pagefilter, page)
 	return err
 }
