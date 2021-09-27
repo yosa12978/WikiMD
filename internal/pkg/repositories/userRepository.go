@@ -16,7 +16,7 @@ import (
 
 type IUserRepository interface {
 	LogInUser(username string, password string) (*dto.UserSessionDTO, error)
-	CreateUser(username string, password string, email string) error
+	CreateUser(username string, password string) error
 	ReadUser(username string) (*models.User, error)
 	UpdateUser(id_hex string, username string) error
 	DeleteUser(id_hex string, username string) error
@@ -41,7 +41,7 @@ func (ur *UserRepository) LogInUser(username string, password string) (*dto.User
 	return &compl, nil
 }
 
-func (ur *UserRepository) CreateUser(username string, password string, email string) error {
+func (ur *UserRepository) CreateUser(username string, password string) error {
 	_, err := ur.ReadUser(username)
 	if err == nil {
 		return errors.New("username is already in use")
@@ -50,10 +50,10 @@ func (ur *UserRepository) CreateUser(username string, password string, email str
 		ID:       primitive.NewObjectID(),
 		Username: username,
 		Password: crypto.GetMD5(password),
-		Email:    email,
-		Regdate:  time.Now().Unix(),
-		Token:    crypto.GetToken32(),
-		Role:     models.USER_ROLE,
+		//Email:    email,
+		Regdate: time.Now().Unix(),
+		Token:   crypto.GetToken32(),
+		Role:    models.USER_ROLE,
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

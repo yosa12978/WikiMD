@@ -11,11 +11,10 @@ import (
 func InitMainRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	router.Use(midware.CountTime)
-
+	router.Use(midware.NoCache)
 	fs := http.FileServer(http.Dir("./static/"))
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
-	// mainHandler := handlers.NewMainHandler()
 	authHandler := handlers.NewAuthHandler()
 	userHandler := handlers.NewUserHandler()
 	pageHandler := handlers.NewPageHandler()
@@ -31,8 +30,9 @@ func InitMainRouter() *mux.Router {
 	router.HandleFunc("/pages/search", pageHandler.SearchPage).Methods("GET")
 	router.HandleFunc("/commits/{page_id}", commitHandler.GetPageCommits).Methods("GET")
 	router.HandleFunc("/commit/{id}", commitHandler.GetCommit).Methods("GET")
-	router.Handle("/commit/delete/{id}", midware.ModOnly(http.HandlerFunc(commitHandler.DeleteCommit))).Methods("GET")
+	//router.Handle("/commit/delete/{id}", midware.ModOnly(http.HandlerFunc(commitHandler.DeleteCommit))).Methods("GET")
 	router.Handle("/page/delete/{id}", midware.ModOnly(http.HandlerFunc(pageHandler.DeletePage))).Methods("GET")
+	router.Handle("/commit/reuse/{id}", midware.LoginRequired(http.HandlerFunc(commitHandler.ReuseCommit))).Methods("GET")
 
 	router.HandleFunc("/user/{username}", userHandler.GetUser).Methods("GET")
 

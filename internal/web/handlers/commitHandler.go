@@ -12,6 +12,7 @@ type ICommitHandler interface {
 	GetPageCommits(w http.ResponseWriter, r *http.Request)
 	GetCommit(w http.ResponseWriter, r *http.Request)
 	DeleteCommit(w http.ResponseWriter, r *http.Request)
+	ReuseCommit(w http.ResponseWriter, r *http.Request)
 }
 
 type CommitHandler struct{}
@@ -49,4 +50,14 @@ func (ch *CommitHandler) DeleteCommit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/", 301)
+}
+
+func (ch *CommitHandler) ReuseCommit(w http.ResponseWriter, r *http.Request) {
+	v := mux.Vars(r)
+	s, err := repositories.NewCommitRepository().ChangeCommit(v["id"])
+	if err != nil {
+		http.Error(w, err.Error(), 404)
+		return
+	}
+	http.Redirect(w, r, "/page/id/"+s, 301)
 }
