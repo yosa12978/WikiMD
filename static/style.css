@@ -1,13 +1,14 @@
 html {
-    margin: 5px;
+    margin: 0px;
 }
 * {
     font-family: 'Times New Roman', Times, serif;
     word-wrap: break-word;
+    border: radius 0px;
 }
 .form-control {
     max-width: 400px;
-
+    border: radius 0px !important;
 }
 i {
     margin-left: 5px;

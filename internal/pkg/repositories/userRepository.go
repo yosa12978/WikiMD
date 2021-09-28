@@ -22,6 +22,7 @@ type IUserRepository interface {
 	DeleteUser(id_hex string, username string) error
 	GetUserRole(username string) (models.Role, error)
 	ReadByNameAndPass(username string, password string) (models.User, error)
+	ChangeRole(role models.Role, username string) error
 }
 
 type UserRepository struct {
@@ -132,4 +133,18 @@ func (ur *UserRepository) ReadByNameAndPass(username string, password string) (m
 		}
 	}
 	return user, err
+}
+
+func (ur *UserRepository) ChangeRole(role models.Role, username string) error {
+	filter := bson.M{"username": username}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	var user models.User
+	err := ur.db.Collection("users").FindOne(ctx, filter).Decode(&user)
+	if err != nil {
+		return errors.New("user not found")
+	}
+	user.Role = role
+	_, err = ur.db.Collection("users").ReplaceOne(ctx, filter, user)
+	return err
 }

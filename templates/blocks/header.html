@@ -1,6 +1,6 @@
 {{define "header"}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%;">
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,7 +15,8 @@
 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> 
     </head>
-    <body>
+    <body style="background-color:#F9F9F9; ">
+        <div style="padding: 5px;background-color: white;position: absolute;left: 50%;transform: translate(-50%, 0%);min-height: 100%;border-radius: 0px; align-items: center;width: 100%;max-width: 800px; position: absolute;" >
         <div>
         <h1 ><a href="/" style="color: black; "><img src="{{.Info.Icon}}" style="max-width: 128px; max-height: 128px;">{{.Info.Name}}</a></h1>
         <small>{{.Info.Desc}}</small><br>

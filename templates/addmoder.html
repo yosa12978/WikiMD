@@ -1,0 +1,11 @@
+{{define "addmoder"}}
+
+{{template "header" .}}
+<h1>Add new moderator</h1>
+<form method="GET" action="/pages/search" class="form-inline">
+    <input name="q" class="form-control" style="float: left;" type="text" placeholder="username"/>
+    <button class="btn btn-primary mr-1" type="submit"><i class="fa fa-plus" aria-hidden="true"></i>Add moder</button>
+</form>
+{{template "footer" .}}
+
+{{end}}
