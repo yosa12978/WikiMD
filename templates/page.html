@@ -18,7 +18,7 @@
 </div>
 
 <script>
-  document.getElementById('content').innerHTML = marked("{{.P.Body}}");
+  document.getElementById('content').innerHTML = marked.parse("{{.P.Body}}");
   let dat = new Date({{.P.Time}} * 1000)
   let dt = moment(dat).format("DD/MM/YYYY HH:mm")
   document.getElementById('upd').innerHTML = "Last Update: " + dt

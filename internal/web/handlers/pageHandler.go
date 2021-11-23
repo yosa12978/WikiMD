@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/yosa12978/WikiMD/internal/pkg/dto"
@@ -38,7 +39,11 @@ func (ph *PageHandler) GetPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ph *PageHandler) GetPages(w http.ResponseWriter, r *http.Request) {
-	pages := repositories.NewPageRepository().GetPages()
+	p, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		p = 1
+	}
+	pages := repositories.NewPageRepository().GetPages(int64(p))
 	helpers.RenderTmpl(w, r, "pages", pages)
 }
 

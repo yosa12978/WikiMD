@@ -17,7 +17,7 @@ import (
 type IPageRepository interface {
 	CreatePage(page_dto *dto.CreatePageDTO, username string) error
 	ReadPage(id_hex string) (*models.Commit, error)
-	GetPages() []models.Page
+	GetPages(page int64) []models.Page
 	SearchPages(query string) []models.Page
 	AddCommit(pageid_hex string, commit *models.Commit) error
 	DeletePage(id_hex string, username string) error
@@ -79,8 +79,8 @@ func (pr *PageRepository) ReadPage(id_hex string) (*models.Commit, error) {
 	return commit, err
 }
 
-func (pr *PageRepository) GetPages() []models.Page {
-	f_opt := options.Find().SetSort(bson.M{"name": 1})
+func (pr *PageRepository) GetPages(page int64) []models.Page {
+	f_opt := options.Find().SetSort(bson.M{"name": 1}) //.SetSkip((page - 1) * 3).SetLimit(3)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var pages []models.Page
@@ -88,21 +88,9 @@ func (pr *PageRepository) GetPages() []models.Page {
 	if err != nil {
 		return pages
 	}
-	// var wg sync.WaitGroup
-	for cursor.Next(ctx) {
-		// wg.Add(1)
-		// go func(c *mongo.Cursor) {
-		// 	defer wg.Done()
-		var page models.Page
-		err := cursor.Decode(&page)
-		if err != nil {
-			continue
-			// return
-		}
-		pages = append(pages, page)
-		// 	}(cursor)
+	if err := cursor.All(ctx, &pages); err != nil {
+		return pages
 	}
-	// wg.Wait()
 	return pages
 }
 
