@@ -14,7 +14,6 @@ A simple wiki based on markdown markup
 - [Installation](#installation)
 - [Contact](#contact)
 - [License](#license)
-- [МАН](#ман)
 
 
 ## Installation
@@ -51,7 +50,4 @@ Email: <yusuf_yakubov@hotmail.com>
 
 This repository licensed under GNU GPLv3 license. View [License](LICENSE) file for more details
 
-Copyright © Yusuf Yakubov, 2021
-
-## МАН
-Подготовил Якубов Юсуф как исследовательский проект для Малой Академии Наук
+Copyright © Yusuf Yakubov, 2023

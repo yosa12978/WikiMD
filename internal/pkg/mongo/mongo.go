@@ -8,7 +8,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var db *mongo.Database
+var (
+	db *mongo.Database
+)
 
 func InitMongo(cfg *config.Config) (*mongo.Database, error) {
 	options := options.Client().ApplyURI(cfg.Mongo.Conn)

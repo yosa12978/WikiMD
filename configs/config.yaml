@@ -3,7 +3,7 @@ Wiki:
   desc: a light markdown wikiengine
   icon: /static/logo.png
 Server:
-  port: 8989
+  port: 8089
 Mongo:
-  conn: mongodb://localhost:27017/
+  conn: mongodb://wikimd-mongo:27017/
   db: wikimd
